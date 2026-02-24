@@ -2,6 +2,9 @@
 
 Full-stack application that indexes YouTube videos and supports RAG chat over transcript chunks.
 
+<img width="1670" height="826" alt="Screenshot 2026-02-24 at 9 38 58 AM" src="https://github.com/user-attachments/assets/3c2a9068-8f2d-4de7-b17c-e3fa7d6cf2d8" />
+
+
 ## Monorepo Layout
 
 -   `backend/`: FastAPI, pipeline services, Milvus Lite, RAG orchestration
