@@ -153,6 +153,7 @@ class MilvusService:
         )
 
         rows: list[dict[str, Any]] = []
+        seen: set[tuple[str, str, str]] = set()
         for hits in search_result:
             for hit in hits:
                 metadata = hit.entity.get('metadata')
@@ -161,12 +162,23 @@ class MilvusService:
                         metadata = json.loads(metadata)
                     except json.JSONDecodeError:
                         metadata = {'raw': metadata}
+                text = hit.entity.get('text')
+                safe_metadata = metadata or {}
+                dedupe_key = (
+                    str(safe_metadata.get('video_id', '')),
+                    str(safe_metadata.get('chunk_index', '')),
+                    str(text or ''),
+                )
+                if dedupe_key in seen:
+                    continue
+
+                seen.add(dedupe_key)
                 rows.append(
                     {
                         'id': hit.id,
                         'score': float(hit.score),
-                        'text': hit.entity.get('text'),
-                        'metadata': metadata or {},
+                        'text': text,
+                        'metadata': safe_metadata,
                     }
                 )
         return rows
@@ -177,3 +189,11 @@ class MilvusService:
             utility.drop_collection(collection_name)
             return True
         return False
+
+    def collection_size(self, collection_name: str) -> int:
+        collection_name = self._sanitize_collection_name(collection_name)
+        if not utility.has_collection(collection_name):
+            return 0
+
+        collection = Collection(name=collection_name)
+        return int(collection.num_entities)

@@ -1,24 +1,70 @@
 .upload-card {
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: none;
+  background: #f8fafc;
+}
+
+h2 {
+  margin: 0 0 14px;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.preview-wrapper {
+  border: 1px solid #d4dce8;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e5e7eb;
+  margin-bottom: 14px;
+}
+
+.video-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  display: block;
+}
+
+.invalid-url {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  color: #64748b;
   padding: 16px;
-  border-radius: 16px;
+  text-align: center;
 }
 
 form {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
-.state-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+mat-form-field {
+  width: 100%;
+}
+
+.upload-btn {
+  background: #081636 !important;
+  color: #f8fafc !important;
+  border-radius: 8px;
+  min-height: 44px;
+}
+
+.progress-wrap {
+  display: grid;
+  gap: 6px;
   color: #334155;
+  font-size: 13px;
 }
 
 .success {
+  margin: 0;
   color: #166534;
 }
 
 .error {
+  margin: 0;
   color: #b91c1c;
 }

@@ -29,6 +29,7 @@ import { ChatMessage } from '../../models/api.models';
 export class ChatComponent {
   @Input() videoId = '';
   @Input() collectionName = '';
+  @Input() disabled = false;
 
   readonly form = new FormGroup({
     question: new FormControl('', [Validators.required]),
@@ -40,8 +41,12 @@ export class ChatComponent {
 
   constructor(private readonly apiService: ApiService) {}
 
+  get sendDisabled(): boolean {
+    return this.disabled || this.loading || this.form.invalid || !this.videoId;
+  }
+
   ask(): void {
-    if (this.form.invalid || this.loading) {
+    if (this.sendDisabled) {
       return;
     }
 
@@ -64,7 +69,7 @@ export class ChatComponent {
             ...this.messages,
             {
               sender: 'assistant',
-              text: `${res.answer}\n\n(tokens: ${res.tokens_used})`,
+              text: res.answer,
               sources: res.sources,
             },
           ];

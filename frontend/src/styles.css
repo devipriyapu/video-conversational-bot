@@ -1,3 +1,5 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
 :root {
   --bg-start: #f3f9f7;
   --bg-end: #dceef5;

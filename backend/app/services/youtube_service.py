@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError
@@ -20,6 +21,24 @@ class DownloadedVideo:
 class YouTubeService:
     def __init__(self, upload_dir: Path) -> None:
         self.upload_dir = upload_dir
+
+    def extract_video_id(self, youtube_url: str) -> str | None:
+        parsed = urlparse(youtube_url.strip())
+        host = parsed.netloc.replace('www.', '')
+
+        if host == 'youtu.be':
+            video_id = parsed.path.lstrip('/').split('/')[0]
+            return video_id or None
+
+        if host in {'youtube.com', 'm.youtube.com'}:
+            if parsed.path == '/watch':
+                video_id = parse_qs(parsed.query).get('v', [''])[0]
+                return video_id or None
+            if parsed.path.startswith('/embed/'):
+                video_id = parsed.path.split('/')[2] if len(parsed.path.split('/')) > 2 else ''
+                return video_id or None
+
+        return None
 
     def download_video(self, youtube_url: str) -> DownloadedVideo:
         format_candidates = [

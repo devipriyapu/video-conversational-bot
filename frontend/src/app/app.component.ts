@@ -17,6 +17,7 @@ export class AppComponent {
   collectionName = '';
   deleteMessage = '';
   deleteError = '';
+  isUploading = false;
 
   constructor(private readonly apiService: ApiService) {}
 
@@ -27,7 +28,15 @@ export class AppComponent {
     this.deleteError = '';
   }
 
+  onUploadingChange(uploading: boolean): void {
+    this.isUploading = uploading;
+  }
+
   deleteCollection(): void {
+    if (this.isUploading || !this.indexedVideoId) {
+      return;
+    }
+
     this.deleteMessage = '';
     this.deleteError = '';
 

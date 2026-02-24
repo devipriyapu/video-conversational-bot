@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 from app.services.audio_service import AudioService
 from app.services.embedding_service import EmbeddingService
@@ -42,11 +43,23 @@ class PipelineService:
         return self.default_collection
 
     def process_youtube(self, youtube_url: str, collection_name: str | None = None, rebuild: bool = False) -> dict:
+        parsed_video_id = self.youtube_service.extract_video_id(youtube_url)
+        target_collection = self.resolve_collection_name(parsed_video_id, collection_name)
+
+        if not rebuild and parsed_video_id:
+            cached = self._load_cached_result(parsed_video_id, target_collection)
+            if cached:
+                return cached
+
         downloaded = self.youtube_service.download_video(youtube_url)
         target_collection = self.resolve_collection_name(downloaded.video_id, collection_name)
 
         if rebuild:
             self.milvus_service.drop_collection(target_collection)
+        else:
+            cached = self._load_cached_result(downloaded.video_id, target_collection)
+            if cached:
+                return cached
 
         audio_path = self.audio_service.extract_mp3(downloaded.video_path, downloaded.video_id)
         transcript_text = self.transcription_service.transcribe_audio(audio_path)
@@ -78,6 +91,7 @@ class PipelineService:
                     'title': downloaded.title,
                     'collection': target_collection,
                     'chunks': inserted,
+                    'transcript_path': str(transcript_path),
                 },
                 indent=2,
             ),
@@ -90,4 +104,34 @@ class PipelineService:
             'collection_name': target_collection,
             'chunk_count': inserted,
             'transcript_path': str(transcript_path),
+        }
+
+    def _load_cached_result(self, video_id: str, collection_name: str) -> dict[str, Any] | None:
+        manifest_path = self.transcript_dir / f'{video_id}.json'
+        if not manifest_path.exists():
+            return None
+
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+        except (json.JSONDecodeError, OSError):
+            return None
+
+        manifest_collection = str(manifest.get('collection', ''))
+        if manifest_collection != collection_name:
+            return None
+
+        chunk_count = int(manifest.get('chunks', 0))
+        stored_entities = self.milvus_service.collection_size(collection_name)
+        if stored_entities <= 0:
+            return None
+        if self.create_collection_per_video and chunk_count > 0 and stored_entities < chunk_count:
+            return None
+
+        transcript_path = str(manifest.get('transcript_path', self.transcript_dir / f'{video_id}.txt'))
+        return {
+            'video_id': video_id,
+            'title': str(manifest.get('title', video_id)),
+            'collection_name': collection_name,
+            'chunk_count': chunk_count or stored_entities,
+            'transcript_path': transcript_path,
         }

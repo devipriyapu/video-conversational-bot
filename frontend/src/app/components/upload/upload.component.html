@@ -1,23 +1,38 @@
 <mat-card class="upload-card">
-  <h2>Index YouTube Video</h2>
+  <h2>YouTube Video</h2>
+
+  <div class="preview-wrapper">
+    @if (embedUrl) {
+    <iframe
+      class="video-frame"
+      [src]="embedUrl"
+      title="YouTube video player"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+    ></iframe>
+    } @else {
+    <div class="invalid-url">Enter a valid YouTube URL to preview the video.</div>
+    }
+  </div>
 
   <form [formGroup]="form" (ngSubmit)="submit()">
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>YouTube URL</mat-label>
-      <input matInput formControlName="youtube_url" placeholder="https://www.youtube.com/watch?v=..." />
+      <input matInput formControlName="youtube_url" placeholder="https://www.youtube.com/watch?v=..." [disabled]="loading" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Collection Name (optional)</mat-label>
-      <input matInput formControlName="collection_name" placeholder="video_custom" />
+      <input matInput formControlName="collection_name" placeholder="My Collection" [disabled]="loading" />
     </mat-form-field>
 
-    <button mat-flat-button color="primary" type="submit" [disabled]="loading">Upload & Index</button>
+    <button mat-flat-button type="submit" class="upload-btn" [disabled]="loading">Upload & Index</button>
 
     @if (loading) {
-    <div class="state-row">
-      <mat-spinner diameter="24"></mat-spinner>
-      <span>Downloading, transcribing and indexing...</span>
+    <div class="progress-wrap">
+      <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+      <span>Downloading, transcribing and indexing... {{ progress }}%</span>
     </div>
     }
 
