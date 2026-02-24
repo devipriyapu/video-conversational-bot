@@ -1,0 +1,58 @@
+.chat-card {
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.messages {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.bubble {
+  border-radius: 12px;
+  padding: 10px;
+  max-width: 85%;
+}
+
+.user {
+  justify-self: end;
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.assistant {
+  justify-self: start;
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: 'Outfit', sans-serif;
+}
+
+.sources {
+  font-size: 12px;
+  margin-top: 8px;
+  opacity: 0.9;
+}
+
+form {
+  display: grid;
+  gap: 10px;
+}
+
+.state-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error {
+  color: #b91c1c;
+}

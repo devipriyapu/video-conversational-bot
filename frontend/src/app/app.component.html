@@ -1,0 +1,24 @@
+<main class="layout">
+  <section>
+    <app-upload (indexed)="onIndexed($event)"></app-upload>
+
+    @if (indexedVideoId) {
+    <div class="context-row">
+      <p>Active video: <strong>{{ indexedVideoId }}</strong> | Collection: <strong>{{ collectionName }}</strong></p>
+      <button mat-stroked-button color="warn" (click)="deleteCollection()">Delete Collection</button>
+    </div>
+    }
+
+    @if (deleteMessage) {
+    <p class="success">{{ deleteMessage }}</p>
+    }
+
+    @if (deleteError) {
+    <p class="error">{{ deleteError }}</p>
+    }
+  </section>
+
+  <section>
+    <app-chat [videoId]="indexedVideoId" [collectionName]="collectionName"></app-chat>
+  </section>
+</main>

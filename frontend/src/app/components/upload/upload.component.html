@@ -1,0 +1,32 @@
+<mat-card class="upload-card">
+  <h2>Index YouTube Video</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline">
+      <mat-label>YouTube URL</mat-label>
+      <input matInput formControlName="youtube_url" placeholder="https://www.youtube.com/watch?v=..." />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Collection Name (optional)</mat-label>
+      <input matInput formControlName="collection_name" placeholder="video_custom" />
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="loading">Upload & Index</button>
+
+    @if (loading) {
+    <div class="state-row">
+      <mat-spinner diameter="24"></mat-spinner>
+      <span>Downloading, transcribing and indexing...</span>
+    </div>
+    }
+
+    @if (success) {
+    <p class="success">{{ success }}</p>
+    }
+
+    @if (error) {
+    <p class="error">{{ error }}</p>
+    }
+  </form>
+</mat-card>

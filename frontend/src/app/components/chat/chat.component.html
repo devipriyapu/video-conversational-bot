@@ -1,0 +1,40 @@
+<mat-card class="chat-card">
+  <h2>Chat with Video</h2>
+
+  <div class="messages">
+    @for (msg of messages; track $index) {
+    <div class="bubble" [class.user]="msg.sender === 'user'" [class.assistant]="msg.sender === 'assistant'">
+      <pre>{{ msg.text }}</pre>
+      @if (msg.sources?.length) {
+      <div class="sources">
+        <strong>Sources:</strong>
+        @for (source of msg.sources; track $index) {
+        <p>
+          {{ source.metadata['chunk_index'] }} | score: {{ source.score | number : '1.2-4' }}
+        </p>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="ask()">
+    <mat-form-field appearance="outline">
+      <mat-label>Ask a question</mat-label>
+      <textarea matInput rows="3" formControlName="question" placeholder="What is the key takeaway?"></textarea>
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="submit" [disabled]="loading">Send</button>
+  </form>
+
+  @if (loading) {
+  <div class="state-row">
+    <mat-spinner diameter="24"></mat-spinner>
+    <span>Generating answer...</span>
+  </div>
+  }
+
+  @if (error) {
+  <p class="error">{{ error }}</p>
+  }
+</mat-card>
